@@ -65,7 +65,7 @@ jobs:
         if: matrix.target == 'linux'
         run: |
           cd build/linux/x64/release/bundle
-          zip -r ../../../../catpin-linux-x64.zip .
+          zip -r ../../../../../catpin-linux-x64.zip .
 
       - name: Prepare macOS artifact
         if: matrix.target == 'macos'

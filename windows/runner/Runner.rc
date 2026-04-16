@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "binternet_app" "\0"
+            VALUE "CompanyName", "com.catling" "\0"
+            VALUE "FileDescription", "catpin" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "binternet_app" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "binternet_app.exe" "\0"
-            VALUE "ProductName", "binternet_app" "\0"
+            VALUE "InternalName", "catpin" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.catling. All rights reserved." "\0"
+            VALUE "OriginalFilename", "catpin.exe" "\0"
+            VALUE "ProductName", "catpin" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
