@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:gal/gal.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'pinterest_client.dart';
 import 'user_detail.dart';
 
@@ -175,7 +176,39 @@ class _PinDetailPageState extends State<PinDetailPage> {
     }
   }
 
+  Future<bool> _requestPhotoPermission() async {
+    if (Platform.isIOS) {
+      final status = await Permission.photos.status;
+      final addOnlyStatus = await Permission.photosAddOnly.status;
+      if (status.isGranted || addOnlyStatus.isGranted || status.isLimited) {
+        return true;
+      }
+      final result = await Permission.photosAddOnly.request();
+      if (result.isGranted || result.isLimited) {
+        return true;
+      }
+      final fullResult = await Permission.photos.request();
+      return fullResult.isGranted || fullResult.isLimited;
+    } else if (Platform.isAndroid) {
+      final status = await Permission.photos.status;
+      if (status.isGranted) return true;
+      final result = await Permission.photos.request();
+      return result.isGranted;
+    }
+    return true;
+  }
+
   Future<void> _downloadMedia() async {
+    final hasPermission = await _requestPhotoPermission();
+    if (!hasPermission) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Permission denied. Cannot save media.')),
+        );
+      }
+      return;
+    }
+
     final currentPin = _detailedPin ?? widget.pin;
     final videoData = _client.extractVideo(currentPin);
     String? mediaUrl;
@@ -340,10 +373,14 @@ class _PinDetailPageState extends State<PinDetailPage> {
 
       // Save to gallery using gal
       if (Platform.isAndroid || Platform.isIOS) {
-        if (mediaUrl.contains('.mp4') || isHls) {
-          await Gal.putVideo(filePath);
-        } else {
-          await Gal.putImage(filePath);
+        try {
+          if (mediaUrl.contains('.mp4') || isHls) {
+            await Gal.putVideo(filePath);
+          } else {
+            await Gal.putImage(filePath);
+          }
+        } catch (e) {
+          throw Exception('Failed to save to gallery: $e');
         }
       } else {
         final downloadsDir = await getDownloadsDirectory();
