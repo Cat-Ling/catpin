@@ -6,6 +6,7 @@ import 'package:chewie/chewie.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:gal/gal.dart';
 import 'pinterest_client.dart';
 import 'user_detail.dart';
 
@@ -584,7 +585,7 @@ class _PinDetailPageState extends State<PinDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Comments ($totalCount)',
+          'Comments',
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 16),
@@ -701,6 +702,20 @@ class _PinDetailPageState extends State<PinDetailPage> {
     if (count is int) {
       if (count >= 1000000) {
         label = '${(count / 1000000).toStringAsFixed(1)}M';
+      } else if (count >= 1000) {
+        label = '${(count / 1000).toStringAsFixed(1)}K';
+      }
+    }
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Colors.grey),
+        const SizedBox(width: 4),
+        Text(label, style: const TextStyle(color: Colors.grey)),
+      ],
+    );
+  }
+}
+000000).toStringAsFixed(1)}M';
       } else if (count >= 1000) {
         label = '${(count / 1000).toStringAsFixed(1)}K';
       }

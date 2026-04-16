@@ -331,7 +331,7 @@ class _HomePageState extends State<HomePage> {
               title = rawTitle['text'] ?? rawTitle['format'] ?? '';
             }
             
-            final isVideo = pin['videos'] != null || pin['story_pin_data'] != null;
+            final isVideo = _client.checkIsVideo(pin);
             
             return Card(
               clipBehavior: Clip.antiAlias,
@@ -395,6 +395,10 @@ class _HomePageState extends State<HomePage> {
     return RefreshIndicator(
       onRefresh: () => _performSearch(_searchController.text),
       child: content,
+    );
+  }
+}
+ child: content,
     );
   }
 }

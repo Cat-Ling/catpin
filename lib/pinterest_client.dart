@@ -176,6 +176,21 @@ class PinterestClient {
     return '';
   }
 
+  bool checkIsVideo(Map<String, dynamic> pin) {
+    if (pin['videos'] != null || pin['video_list'] != null) return true;
+    final story = pin['story_pin_data'];
+    if (story != null && story['pages'] != null && (story['pages'] as List).isNotEmpty) {
+      for (var page in story['pages']) {
+        if (page['blocks'] != null) {
+          for (var block in page['blocks']) {
+            if (block['type'] == 'video' || block['video'] != null) return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   Map<String, dynamic>? extractVideo(Map<String, dynamic> pin) {
     // Check for story pins first
     final story = pin['story_pin_data'];
