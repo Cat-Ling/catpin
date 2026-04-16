@@ -213,15 +213,16 @@ class _PinDetailPageState extends State<PinDetailPage> {
     });
 
     try {
-      final dir = await getDownloadsDirectory() ?? await getApplicationDocumentsDirectory();
       final pinId = currentPin['id'] ?? currentPin['entity_id'] ?? 'pin';
-      
       final dio = Dio();
       dio.options.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36';
 
+      final tempDir = await getTemporaryDirectory();
+      String filePath;
+
       if (isHls) {
-        final fileName = 'binternet_$pinId.mp4';
-        final filePath = p.join(dir.path, fileName);
+        final fileName = 'catpin_$pinId.mp4';
+        filePath = p.join(tempDir.path, fileName);
         
         // 1. Fetch Playlist
         final playlistResponse = await dio.get(mediaUrl);
@@ -319,15 +320,10 @@ class _PinDetailPageState extends State<PinDetailPage> {
         
         await sink.close();
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Video saved to: $filePath')),
-          );
-        }
       } else {
         final extension = mediaUrl.contains('.mp4') ? '.mp4' : '.jpg';
-        final fileName = 'binternet_$pinId$extension';
-        final filePath = p.join(dir.path, fileName);
+        final fileName = 'catpin_$pinId$extension';
+        filePath = p.join(tempDir.path, fileName);
 
         await dio.download(
           mediaUrl,
@@ -340,12 +336,28 @@ class _PinDetailPageState extends State<PinDetailPage> {
             }
           },
         );
+      }
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Downloaded to: $filePath')),
-          );
+      // Save to gallery using gal
+      if (Platform.isAndroid || Platform.isIOS) {
+        if (mediaUrl.contains('.mp4') || isHls) {
+          await Gal.putVideo(filePath);
+        } else {
+          await Gal.putImage(filePath);
         }
+      } else {
+        final downloadsDir = await getDownloadsDirectory();
+        if (downloadsDir != null) {
+          final finalPath = p.join(downloadsDir.path, p.basename(filePath));
+          await File(filePath).copy(finalPath);
+          filePath = finalPath;
+        }
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Media saved successfully.')),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -719,20 +731,6 @@ class _PinDetailPageState extends State<PinDetailPage> {
     if (count is int) {
       if (count >= 1000000) {
         label = '${(count / 1000000).toStringAsFixed(1)}M';
-      } else if (count >= 1000) {
-        label = '${(count / 1000).toStringAsFixed(1)}K';
-      }
-    }
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: Colors.grey),
-        const SizedBox(width: 4),
-        Text(label, style: const TextStyle(color: Colors.grey)),
-      ],
-    );
-  }
-}
-000000).toStringAsFixed(1)}M';
       } else if (count >= 1000) {
         label = '${(count / 1000).toStringAsFixed(1)}K';
       }

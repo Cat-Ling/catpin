@@ -45,7 +45,7 @@ dependencies:
   permission_handler: ^12.0.1
   fvp: ^0.35.2
   path: ^1.9.0
-  gal: ^2.5.0
+  gal: ^2.3.2
 
 dev_dependencies:
   flutter_test:

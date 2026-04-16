@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 1000) {
       if (!_isLoading && !_isLoadingMore && _bookmark != null && _bookmark!.isNotEmpty) {
         _loadMore();
       }
@@ -187,7 +187,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Binternet',
+              'Catpin',
               style: TextStyle(
                 fontSize: 48,
                 fontWeight: FontWeight.bold,
@@ -395,10 +395,6 @@ class _HomePageState extends State<HomePage> {
     return RefreshIndicator(
       onRefresh: () => _performSearch(_searchController.text),
       child: content,
-    );
-  }
-}
- child: content,
     );
   }
 }
