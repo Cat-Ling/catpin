@@ -181,9 +181,26 @@ class _PinDetailPageState extends State<PinDetailPage> {
     String? mediaUrl;
     bool isHls = false;
 
-    if (videoData != null && videoData['url'] != null) {
-      mediaUrl = videoData['url'];
-      isHls = mediaUrl!.contains('.m3u8');
+    if (videoData != null) {
+      // For downloads, try to find a direct MP4 first to ensure audio+video is combined
+      final videoList = currentPin['videos']?['video_list'] ?? currentPin['video_list'];
+      if (videoList is Map) {
+        final variants = videoList.cast<String, dynamic>();
+        final mp4Keys = ['V_720W', 'V_360W', 'V_240W'];
+        for (var key in mp4Keys) {
+          if (variants.containsKey(key) && variants[key]['url'] != null) {
+            mediaUrl = variants[key]['url'];
+            isHls = false;
+            break;
+          }
+        }
+      }
+      
+      // Fallback to original selection if no direct MP4 found
+      if (mediaUrl == null && videoData['url'] != null) {
+        mediaUrl = videoData['url'];
+        isHls = mediaUrl!.contains('.m3u8');
+      }
     } else {
       mediaUrl = _client.extractImage(currentPin['images']);
     }
