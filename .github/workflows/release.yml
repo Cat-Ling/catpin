@@ -77,7 +77,9 @@ jobs:
         if: matrix.target == 'ios'
         run: |
           mkdir -p Payload
-          mv build/ios/iphoneos/Runner.app Payload/
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          rm -rf Payload/Runner.app/_CodeSignature
+          rm -f Payload/Runner.app/embedded.mobileprovision
           zip -r catpin-ios-unsigned.ipa Payload/
 
       - name: Release
