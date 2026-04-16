@@ -54,39 +54,40 @@ jobs:
 
       - name: Prepare Android artifact
         if: matrix.target == 'android'
-        run: cp build/app/outputs/flutter-apk/app-release.apk catpin-android.apk
+        run: cp build/app/outputs/flutter-apk/app-release.apk catpin-android-unsigned.apk
 
       - name: Prepare Windows artifact
         if: matrix.target == 'windows'
         shell: pwsh
-        run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath catpin-windows.zip
+        run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath catpin-windows-x64.zip
 
       - name: Prepare Linux artifact
         if: matrix.target == 'linux'
         run: |
           cd build/linux/x64/release/bundle
-          zip -r ../../../../catpin-linux.zip .
+          zip -r ../../../../catpin-linux-x64.zip .
 
       - name: Prepare macOS artifact
         if: matrix.target == 'macos'
         run: |
           cd build/macos/Build/Products/Release
-          zip -r ../../../../../catpin-macos.app.zip catpin.app
+          zip -r ../../../../../catpin-macos-x64.app.zip catpin.app
 
-      - name: Prepare iOS artifact
+      - name: Prepare iOS artifact (Unsigned IPA)
         if: matrix.target == 'ios'
         run: |
-          cd build/ios/iphoneos
-          zip -r ../../../../catpin-ios.app.zip Runner.app
+          mkdir -p Payload
+          mv build/ios/iphoneos/Runner.app Payload/
+          zip -r catpin-ios-unsigned.ipa Payload/
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            catpin-android.apk
-            catpin-windows.zip
-            catpin-linux.zip
-            catpin-macos.app.zip
-            catpin-ios.app.zip
+            catpin-android-unsigned.apk
+            catpin-windows-x64.zip
+            catpin-linux-x64.zip
+            catpin-macos-x64.app.zip
+            catpin-ios-unsigned.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
