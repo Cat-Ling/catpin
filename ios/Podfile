@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '12.0'
+platform :ios, '13.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = '1'
@@ -10,20 +10,7 @@ project 'Runner', {
   'Profile' => :profile,
 }
 
-def flutter_root
-  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-  unless File.exist?(generated_xcode_build_settings_path)
-    raise "Generated.xcconfig must exist. If you're running pod install manually, make sure flutter pub get has been executed."
-  end
-
-  File.foreach(generated_xcode_build_settings_path) do |line|
-    matches = line.match(/\AFLUTTER_ROOT=(.*)\z/)
-    return matches[1] if matches
-  end
-  raise "FLUTTER_ROOT not found in Generated.xcconfig. Try deleting Generated.xcconfig, then run flutter pub get"
-end
-
-require File.expand_path(File.join('..', 'Flutter', 'podhelper.rb'), __FILE__)
+require_relative 'Flutter/podhelper'
 
 target 'Runner' do
   use_frameworks!
